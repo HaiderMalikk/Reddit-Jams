@@ -1,235 +1,292 @@
-# 🎵 Reddit-Powered Song Recommendation System
+![alt text](assets/logowithtext.svg)
 
-An AI-powered music recommendation engine that combines **Spotify playlists**, **Reddit community insights**, and **ChatGPT** to generate personalized song recommendations.
+# RedditJams - Music Recommendation APP
 
-**ADD VARS FOR SUBREDDIT SO USER CAN CHANGE AND FOR POSTS FECTHED TO CONTROL TIME TAKEN**
+**RedditJams** is an intelligent music recommendation system that analyzes your Spotify playlist, searches Reddit's music community for similar tastes, and uses GPT-4 to generate personalized song recommendations.
 
-RedditJa
+---
 
-## 🎯 What Makes This Different?
+## What It Does
 
-Unlike Spotify's built-in recommendations, this system:
+Simply provide a **Spotify playlist URL**, and RedditJams will:
 
-- **Uses Reddit Community Knowledge**: Searches r/music for real user recommendations like "if you like X, try Y"
-- **AI-Powered Analysis**: ChatGPT analyzes patterns between your playlist and Reddit discussions
-- **No User Login Required**: Uses Spotify's Client Credentials (read-only, no authentication)
-- **Focuses on Recommendations, Not Reviews**: Filters for recommendation posts/comments, not general music discussions
-- **Returns Full Track Objects**: Get complete Spotify metadata (name, artist, album, cover art, URLs)
+1. **Analyze your playlist** - Extracts your top tracks and artists based on popularity
+2. **Search Reddit** - Finds music recommendation posts/threads from r/music community
+3. **AI Analysis** - Uses GPT-4 to analyze both your taste and Reddit recommendations
+4. **Return Results** - Delivers 5 personalized song recommendations with Spotify links
 
-## 🚀 How It Works
+---
+
+## How to Use the API
+
+### API Endpoint
 
 ```
-1. Extract Playlist Data from Spotify
-   ↓
-2. Search Reddit for Recommendations (based on top songs/artists)
-   ↓
-3. Format Data for ChatGPT
-   ↓
-4. ChatGPT Analyzes & Generates 5 Recommendations
-   ↓
-5. Search Spotify for Recommended Tracks
-   ↓
-6. Return Full Spotify Song Objects
+POST http://your-domain.com:8000/api/recommendations
 ```
 
-### Detailed Pipeline
+### Request Format
 
-1. **Spotify Extraction**: Gets all tracks from your playlist (songs, artists, albums, popularity)
-2. **Reddit Search**: 
-   - Searches for top 5 most popular tracks from playlist
-   - Searches for top 3 artists from playlist
-   - Filters for posts/comments with keywords: "recommend", "similar", "if you like"
-3. **ChatGPT Processing**: Sends playlist + Reddit data to GPT-4 for pattern analysis
-4. **Spotify Lookup**: Converts ChatGPT recommendations back to full Spotify track objects
-5. **Export & Logging**: Saves all data at each step for debugging and analysis
+Send a POST request with JSON body containing your Spotify playlist URL:
 
-## 📋 Requirements
+```json
+{
+  "playlist_url": "https://open.spotify.com/playlist/3XyDvjoxiae0oWpfJ4kga9"
+}
+```
 
-### Python Packages
+### Example cURL Request
+
 ```bash
-pip install spotipy praw python-dotenv pandas openai
+curl -X POST http://your-domain.com:8000/api/recommendations \
+  -H "Content-Type: application/json" \
+  -d '{"playlist_url": "https://open.spotify.com/playlist/YOUR_PLAYLIST_ID"}'
 ```
 
-### API Keys Required
+---
 
-You'll need API credentials for:
+## API Response
 
-1. **Spotify** (Client Credentials - no user login)
-   - Get from: https://developer.spotify.com/dashboard
-   - Create an app → Copy Client ID & Secret
+The API returns a JSON object with your personalized recommendations:
 
-2. **Reddit** (PRAW)
-   - Get from: https://www.reddit.com/prefs/apps
-   - Create a script app → Copy credentials
-
-3. **OpenAI** (ChatGPT API)
-   - Get from: https://platform.openai.com/api-keys
-   - Create API key
-
-## ⚙️ Setup
-
-1. **Clone/Download the project**
-
-2. **Create `.env` file** in the project root:
-
-```env
-# Spotify API (Client Credentials)
-SPOTIFY_CLIENT_ID=your_spotify_client_id
-SPOTIFY_CLIENT_SECRET=your_spotify_client_secret
-
-# Reddit API
-REDDIT_CLIENT_ID=your_reddit_client_id
-REDDIT_CLIENT_SECRET=your_reddit_client_secret
-REDDIT_USERNAME=your_reddit_username
-REDDIT_PASSWORD=your_reddit_password
-REDDIT_USER_AGENT=your_app_name (by u/your_username)
-
-# OpenAI API
-OPENAI_API_KEY=your_openai_api_key
+```json
+{
+  "success": true,
+  "playlist_name": "My Awesome Playlist",
+  "recommendations": [
+    {
+      "name": "Watermelon Sugar",
+      "artist": "Harry Styles",
+      "album": "Fine Line",
+      "release_date": "2019-12-13",
+      "duration_ms": 174000,
+      "duration_readable": "2:54",
+      "popularity": 85,
+      "external_url": "https://open.spotify.com/track/6UelLqGlWMcVH1E5c4H7lY",
+      "preview_url": "https://p.scdn.co/mp3-preview/...",
+      "uri": "spotify:track:6UelLqGlWMcVH1E5c4H7lY",
+      "album_art": "https://i.scdn.co/image/ab67616d0000b273..."
+    },
+    {
+      "name": "Fast Car",
+      "artist": "Tracy Chapman",
+      "album": "Tracy Chapman",
+      "release_date": "1988-04-05",
+      "duration_ms": 296933,
+      "duration_readable": "4:56",
+      "popularity": 78,
+      "external_url": "https://open.spotify.com/track/2Kerz9H9IejzeIpjhDJoYG",
+      "preview_url": "https://p.scdn.co/mp3-preview/...",
+      "uri": "spotify:track:2Kerz9H9IejzeIpjhDJoYG",
+      "album_art": "https://i.scdn.co/image/ab67616d0000b273..."
+    }
+  ],
+  "metadata": {
+    "total_tracks_analyzed": 69,
+    "reddit_posts_found": 62,
+    "recommendations_requested": 5,
+    "recommendations_found": 5
+  }
+}
 ```
 
-3. **Install dependencies**:
-```bash
-pip install -r requirements.txt
-```
+### Response Fields
 
-## 🎮 Usage
+- **success** - Boolean indicating if the request succeeded
+- **playlist_name** - Name of your Spotify playlist
+- **recommendations** - Array of recommended songs with full details:
+  - `name` - Song title
+  - `artist` - Artist name
+  - `album` - Album name
+  - `release_date` - Release date (YYYY-MM-DD)
+  - `duration_ms` - Duration in milliseconds
+  - `duration_readable` - Human-readable duration (M:SS)
+  - `popularity` - Spotify popularity score (0-100)
+  - `external_url` - Direct Spotify link to the song
+  - `preview_url` - 30-second preview URL (if available)
+  - `uri` - Spotify URI for the track
+  - `album_art` - Album artwork URL
+- **metadata** - Statistics about the recommendation process:
+  - `total_tracks_analyzed` - Number of tracks in your playlist
+  - `reddit_posts_found` - Number of Reddit posts analyzed
+  - `recommendations_requested` - Number of recommendations requested (default: 5)
+  - `recommendations_found` - Number of recommendations successfully found on Spotify
 
-### Option 1: Run the Jupyter Notebook
+---
 
-Open `steps.ipynb` and run cells in order:
+## How It Works
 
-1. **Cell 1-3**: Install packages and initialize APIs
-2. **Cell 4-5**: Configure playlist URL and settings
-3. **Cell 6**: Extract playlist data from Spotify
-4. **Cell 7**: Search Reddit for recommendations
-5. **Cell 8**: Format data for ChatGPT
-6. **Cell 9**: Get AI recommendations
-7. **Cell 10**: Search Spotify for recommended tracks
-8. **Cell 11-13**: Display results and export data
+### The Algorithm
 
-### Configuration Variables
+RedditJams uses a multi-step process to generate highly personalized recommendations:
 
-Edit these in the notebook (Cell 5):
+#### **Step 1: Playlist Analysis**
+- Connects to Spotify API using your playlist URL
+- Extracts all tracks with metadata (name, artist, popularity, etc.)
+- Identifies your **top 5 most popular tracks**
+- Identifies your **top 3 most frequent artists**
 
-```python
-PLAYLIST_URL = "https://open.spotify.com/playlist/YOUR_PLAYLIST_ID"
-SUBREDDIT_NAME = "music"  # Which subreddit to search
-MAX_REDDIT_POSTS_PER_QUERY = 20  # Posts per search
-MAX_COMMENTS_PER_POST = 30  # Comments to analyze per post
-NUM_RECOMMENDATIONS = 5  # How many songs to recommend
-```
+#### **Step 2: Reddit Community Search (Parallel)**
+The system searches Reddit's r/music community in parallel for similar music tastes:
 
-## 📊 Output
+**Track-Based Searches (5 parallel queries):**
+- For each of your top 5 tracks, searches Reddit for: `"[track name] [artist] recommend"`
+- Example: `"Running Up That Hill Kate Bush recommend"`
+- Finds posts where users recommend songs similar to your favorites
 
-The system generates:
+**Artist-Based Searches (3 parallel queries):**
+- For each of your top 3 artists, searches Reddit for: `"[artist name] recommend similar"`
+- Example: `"Kate Bush recommend similar"`
+- Finds posts recommending artists/songs similar to your favorites
 
-### 1. Console Output
-- Step-by-step progress logs
-- Found Reddit posts and comments
-- ChatGPT recommendations
-- Final Spotify track details
+**Total: 8 simultaneous Reddit searches** - All executed in parallel for maximum speed
 
-### 2. JSON Logs
-- `recommendation_log_TIMESTAMP.json`: Complete pipeline data
-- `recommendations_TIMESTAMP.json`: Just the final recommendations
-
-### 3. CSV Export
-- `recommendations_TIMESTAMP.csv`: DataFrame of recommendations
-
-### Example Recommendation Output
-
-```
-🎵 FINAL SONG RECOMMENDATIONS
-================================================================================
-
-1. Song Name
-   Artist: Artist Name
-   Album: Album Name
-   Release: 2023-01-15
-   Duration: 3:45
-   Popularity: 87/100
-   🎧 Listen: https://open.spotify.com/track/...
-   🖼️  Album Art: https://i.scdn.co/image/...
-   ▶️  Preview: https://p.scdn.co/mp3-preview/...
-   URI: spotify:track:...
-```
-
-## 🔍 What Gets Searched on Reddit?
-
-- **Top 5 songs** from your playlist (by popularity)
-- **Top 3 artists** from your playlist (unique)
-
-Search queries look like:
-- `"Song Name Artist Name recommend"`
-- `"Artist Name recommend similar"`
-
-Only posts/comments with recommendation keywords are collected:
+**Keyword Filtering:**
+Only keeps posts/comments containing recommendation keywords:
 - "recommend"
 - "similar to"
 - "if you like"
 - "check out"
 - "you might like"
 - "fans of"
+- "try"
 
-## 📁 Project Structure
+#### **Step 3: AI-Powered Analysis**
+- Sends your playlist data + Reddit recommendations to **GPT-4**
+- GPT-4 analyzes patterns in your music taste
+- Considers community recommendations from Reddit
+- Generates **5 new song suggestions** (not in your original playlist)
+- Returns songs as JSON: `[{"song": "Title", "artist": "Artist"}, ...]`
 
-```
-spotifyredditproject/
-├── steps.ipynb              # Main recommendation pipeline
-├── spotifyapi.ipynb         # Spotify API exploration/testing
-├── redditstructuredtest.ipynb  # Reddit scraping tests
-├── reddittest.ipynb         # Additional Reddit tests
-├── .env                     # API credentials (not committed)
-├── requirements.txt         # Python dependencies
-└── readme.md               # This file
-```
+#### **Step 4: Spotify Verification**
+- Searches Spotify for each GPT-4 recommendation
+- Retrieves full track details (album art, preview URLs, popularity, etc.)
+- Ensures all recommendations are real, playable songs
+- Returns complete track information with direct Spotify links
 
-## 🛠️ Troubleshooting
-
-### "No Reddit recommendations found"
-- Try a different subreddit (e.g., "listentothis", "ifyoulikeblank")
-- Increase `MAX_REDDIT_POSTS_PER_QUERY`
-- Check if your playlist songs are popular enough to have Reddit discussions
-
-### "ChatGPT returned invalid JSON"
-- The system will log the raw response for debugging
-- Try adjusting the prompt or temperature in Cell 9
-
-### "Spotify track not found"
-- ChatGPT might suggest obscure songs not on Spotify
-- Check the logs to see what was searched
-- The system continues even if some tracks aren't found
-
-## 🎓 Learning Resources
-
-- [Spotify Web API Docs](https://developer.spotify.com/documentation/web-api)
-- [PRAW (Reddit API) Docs](https://praw.readthedocs.io/)
-- [OpenAI API Docs](https://platform.openai.com/docs)
-
-## ⚠️ Rate Limits & Costs
-
-- **Spotify**: Free tier allows 100 requests per 30 seconds
-- **Reddit**: PRAW handles rate limiting automatically
-- **OpenAI**: GPT-4 costs ~$0.03 per request (depending on prompt size)
-
-## 🔮 Future Improvements
-
-- [ ] Support for multiple playlists
-- [ ] Search multiple subreddits
-- [ ] Add audio feature analysis
-- [ ] Create Spotify playlist from recommendations
-- [ ] Web interface
-- [ ] Cache Reddit results to save API calls
-
-## 📝 License
-
-This is a personal project. Feel free to use and modify as needed.
-
-## 🤝 Contributing
-
-This is a learning project! Feel free to fork and experiment.
+#### **Step 5: Results Delivery**
+- Returns formatted JSON response with all recommendations
+- Includes metadata about the recommendation process
+- Ready to display in your application
 
 ---
 
-**Made with ❤️ using Spotify, Reddit, and ChatGPT APIs**
+## Configuration
+
+The API uses the following default configuration:
+
+| Parameter | Default | Description |
+|-----------|---------|-------------|
+| Subreddit | `music` | Reddit community to search |
+| Reddit Posts Per Query | 20 | Max posts to fetch per search |
+| Comments Per Post | 30 | Max comments to analyze per post |
+| Top Tracks | 5 | Number of top tracks to analyze |
+| Top Artists | 3 | Number of top artists to analyze |
+| Recommendations | 5 | Number of songs to recommend |
+| GPT Model | `gpt-4o-mini` | AI model for analysis |
+| GPT Temperature | 0.7 | Creativity level (0-1) |
+
+---
+
+## Why It Works
+
+**Community Intelligence:** Reddit's music community shares authentic recommendations based on real listening experiences, not just algorithmic similarities.
+
+**Multi-Source Analysis:** Combines your actual playlist data with community wisdom, providing recommendations that are both personalized AND discovery-oriented.
+
+**AI Understanding:** GPT-4 understands music context, genres, moods, and can identify nuanced patterns that simple collaborative filtering misses.
+
+**Parallel Processing:** All Reddit searches run simultaneously using async/await, making the API fast despite searching multiple queries.
+
+**Real Spotify Integration:** Every recommendation is verified on Spotify with full metadata, ensuring you can instantly play any suggested song.
+
+---
+
+## Additional Endpoints
+
+### Health Check
+```bash
+GET http://your-domain.com:8000/api/health
+```
+
+Returns:
+```json
+{
+  "status": "healthy",
+  "service": "RedditJams API"
+}
+```
+
+### API Documentation
+```bash
+GET http://your-domain.com:8000/docs
+```
+
+Opens interactive Swagger UI documentation where you can test the API directly in your browser.
+
+---
+
+## Example Use Case
+
+**Your Input:**
+```json
+{
+  "playlist_url": "https://open.spotify.com/playlist/3XyDvjoxiae0oWpfJ4kga9"
+}
+```
+
+**What Happens:**
+1. Analyzes 69 tracks from your playlist
+2. Identifies top tracks: "DAISIES", "Running Up That Hill", "Lover, You Should've Come Over"
+3. Identifies top artists: "Kate Bush", "Fleetwood Mac", "Jeff Buckley"
+4. Searches Reddit for 8 different recommendation queries in parallel
+5. Finds 62 Reddit posts with music recommendations
+6. GPT-4 analyzes all data and suggests 5 new songs
+7. Verifies all songs exist on Spotify
+8. Returns complete track information with links
+
+**Result:**
+You get 5 personalized song recommendations you've never heard, based on your taste + community wisdom, ready to play on Spotify.
+
+---
+
+## Privacy & Data
+
+- **No Data Storage:** The API doesn't store your playlist data or recommendations
+- **No Authentication Required:** Public playlists can be analyzed without Spotify login
+- **Read-Only Access:** Only reads playlist data, never modifies your Spotify account
+- **Anonymous Reddit Search:** Searches public Reddit posts, no account needed
+
+---
+
+## Tips for Best Results
+
+1. **Use Diverse Playlists:** Playlists with varied tracks get more interesting recommendations
+2. **Include Popular Songs:** Well-known tracks have more Reddit discussions
+3. **Genre Consistency:** Playlists focused on specific genres get more relevant suggestions
+4. **Longer Playlists:** More tracks = better understanding of your taste (ideal: 30+ songs)
+
+---
+
+## Technology Stack
+
+- **FastAPI** - High-performance async web framework
+- **AsyncPRAW** - Asynchronous Reddit API wrapper (parallel searches)
+- **Spotipy** - Spotify API integration
+- **OpenAI GPT-4** - AI-powered recommendation analysis
+- **Python asyncio** - Concurrent processing for speed
+
+---
+
+## API Status Codes
+
+- **200** - Success, recommendations returned
+- **500** - Server error (invalid playlist URL, API rate limits, etc.)
+
+---
+
+**Built for music lovers who want to discover their next favorite song.**
+
+[Licence](/licence)
+
+[About The Creater](https://www.haidercodes.com)

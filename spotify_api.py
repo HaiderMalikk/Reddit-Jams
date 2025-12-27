@@ -7,10 +7,11 @@ Handles Spotify authentication and operations:
 
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
+from typing import Dict, List, Optional, Any
 import os
 
 
-def initialize_spotify(client_id, client_secret):
+def initialize_spotify(client_id: str, client_secret: str) -> spotipy.Spotify:
     """
     Initialize Spotify API client
     
@@ -31,12 +32,12 @@ def initialize_spotify(client_id, client_secret):
     return sp
 
 
-def get_playlist_id(url):
+def get_playlist_id(url: str) -> str:
     """Extract playlist ID from URL"""
     return url.split('playlist/')[1].split('?')[0]
 
 
-def get_playlist_data(sp, playlist_url):
+def get_playlist_data(sp: spotipy.Spotify, playlist_url: str) -> Dict[str, Any]:
     """
     Step 2: Extract Playlist Data from Spotify
     
@@ -98,7 +99,7 @@ def get_playlist_data(sp, playlist_url):
     }
 
 
-def search_spotify_song(sp, song_name, artist_name):
+def search_spotify_song(sp: spotipy.Spotify, song_name: str, artist_name: str) -> Optional[Dict[str, Any]]:
     """
     Search Spotify for a song and return full track object
     
@@ -136,7 +137,7 @@ def search_spotify_song(sp, song_name, artist_name):
     return None
 
 
-def search_spotify_recommendations(sp, gpt_recommendations):
+def search_spotify_recommendations(sp: spotipy.Spotify, gpt_recommendations: List[Dict[str, str]]) -> List[Dict[str, Any]]:
     """
     Step 6: Search Spotify for Recommended Songs
     

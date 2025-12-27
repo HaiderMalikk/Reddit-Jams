@@ -7,9 +7,10 @@ Handles OpenAI operations:
 
 import json
 from openai import OpenAI
+from typing import Dict, List, Any
 
 
-def initialize_openai(api_key):
+def initialize_openai(api_key: str) -> OpenAI:
     """
     Initialize OpenAI client
     
@@ -24,7 +25,7 @@ def initialize_openai(api_key):
     return client
 
 
-def format_data_for_chatgpt(playlist_data, reddit_data, top_tracks, subreddit_name, num_recommendations):
+def format_data_for_chatgpt(playlist_data: Dict[str, Any], reddit_data: List[Dict[str, Any]], top_tracks: List[Dict[str, Any]], subreddit_name: str, num_recommendations: int) -> str:
     """
     Step 4: Format Data for ChatGPT
     
@@ -87,7 +88,7 @@ Do NOT include any explanation, just the JSON array. Make sure songs are real an
     return chatgpt_prompt
 
 
-def get_chatgpt_recommendations(openai_client, chatgpt_prompt, model="gpt-4", temperature=0.7, max_tokens=500):
+def get_chatgpt_recommendations(openai_client: OpenAI, chatgpt_prompt: str, model: str = "gpt-4", temperature: float = 0.7, max_tokens: int = 500) -> List[Dict[str, str]]:
     """
     Step 5: Get Recommendations from ChatGPT
     
@@ -137,7 +138,7 @@ def get_chatgpt_recommendations(openai_client, chatgpt_prompt, model="gpt-4", te
         return []
 
 
-def analyze_and_recommend(openai_client, playlist_data, reddit_data, top_tracks, subreddit_name, num_recommendations=5, model="gpt-4", temperature=0.7, max_tokens=500):
+def analyze_and_recommend(openai_client: OpenAI, playlist_data: Dict[str, Any], reddit_data: List[Dict[str, Any]], top_tracks: List[Dict[str, Any]], subreddit_name: str, num_recommendations: int = 5, model: str = "gpt-4", temperature: float = 0.7, max_tokens: int = 500) -> List[Dict[str, str]]:
     """
     Combined Steps 4 & 5: Format data and get ChatGPT recommendations
     

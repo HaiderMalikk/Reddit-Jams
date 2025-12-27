@@ -4,108 +4,72 @@ Coordinates all steps of the recommendation system and displays results (Step 7)
 """
 
 import os
+import asyncio
 from dotenv import load_dotenv
 from spotify_api import initialize_spotify, get_playlist_data, search_spotify_recommendations
-from reddit_api import initialize_reddit, get_reddit_recommendations
+from reddit_api import get_reddit_recommendations
 from ai_analysis import initialize_openai, analyze_and_recommend
 
+# Load environment variables
+load_dotenv()
 
-def get_recommendations(
-    # Required parameters
-    playlist_url,
-    
-    # Spotify parameters (optional - loaded from env)
-    spotify_client_id=None,
-    spotify_client_secret=None,
-    
-    # Reddit parameters (optional - loaded from env)
-    reddit_client_id=None,
-    reddit_client_secret=None,
-    reddit_username=None,
-    reddit_password=None,
-    reddit_user_agent=None,
-    subreddit_name="music",
-    max_reddit_posts_per_query=20,
-    max_comments_per_post=30,
-    num_top_tracks=5,
-    num_top_artists=3,
-    
-    # OpenAI parameters (optional - loaded from env)
-    openai_api_key=None,
-    gpt_model="gpt-4",
-    gpt_temperature=0.7,
-    gpt_max_tokens=500,
-    num_recommendations=5
-):
+# API Credentials Configuration (loaded from environment)
+SPOTIFY_CLIENT_ID: str | None = os.getenv('SPOTIFY_CLIENT_ID')
+SPOTIFY_CLIENT_SECRET: str | None = os.getenv('SPOTIFY_CLIENT_SECRET')
+REDDIT_CLIENT_ID: str | None = os.getenv('REDDIT_CLIENT_ID')
+REDDIT_CLIENT_SECRET: str | None = os.getenv('REDDIT_CLIENT_SECRET')
+REDDIT_USERNAME: str | None = os.getenv('REDDIT_USERNAME')
+REDDIT_PASSWORD: str | None = os.getenv('REDDIT_PASSWORD')
+REDDIT_USER_AGENT: str | None = os.getenv('REDDIT_USER_AGENT')
+OPENAI_API_KEY: str | None = os.getenv('OPENAI_API_KEY')
+
+# GPT Model Configuration
+GPT_MODEL: str = "gpt-4o-mini"
+GPT_TEMPERATURE: float = 0.7
+GPT_MAX_TOKENS: int = 500
+
+# Reddit Configuration
+SUBREDDIT_NAME: str = "music"
+MAX_REDDIT_POSTS_PER_QUERY: int = 20
+MAX_COMMENTS_PER_POST: int = 30
+
+# Analysis Configuration
+NUM_TOP_TRACKS: int = 5
+NUM_TOP_ARTISTS: int = 3
+NUM_RECOMMENDATIONS: int = 5
+
+
+async def get_recommendations(playlist_url: str) -> dict:
     """
-    Main function to get song recommendations
+    Main function to get song recommendations (Async)
     
     Args:
-        playlist_url (str): Spotify playlist URL (REQUIRED)
-        
-        Spotify params:
-            spotify_client_id (str): Spotify client ID
-            spotify_client_secret (str): Spotify client secret
-        
-        Reddit params:
-            reddit_client_id (str): Reddit client ID
-            reddit_client_secret (str): Reddit client secret
-            reddit_username (str): Reddit username
-            reddit_password (str): Reddit password
-            reddit_user_agent (str): Reddit user agent
-            subreddit_name (str): Name of subreddit to search (default: "music")
-            max_reddit_posts_per_query (int): Max posts per query (default: 20)
-            max_comments_per_post (int): Max comments per post (default: 30)
-            num_top_tracks (int): Number of top tracks to search (default: 5)
-            num_top_artists (int): Number of top artists to search (default: 3)
-        
-        OpenAI params:
-            openai_api_key (str): OpenAI API key
-            gpt_model (str): GPT model to use (default: "gpt-4")
-            gpt_temperature (float): Temperature parameter (default: 0.7)
-            gpt_max_tokens (int): Max tokens for response (default: 500)
-            num_recommendations (int): Number of recommendations (default: 5)
+        playlist_url: Spotify playlist URL (REQUIRED)
     
     Returns:
         dict: Contains final recommendations and metadata
     """
-    
-    # Load environment variables if not provided
-    load_dotenv()
-    
-    # Use provided parameters or fall back to environment variables
-    spotify_client_id = spotify_client_id or os.getenv('SPOTIFY_CLIENT_ID')
-    spotify_client_secret = spotify_client_secret or os.getenv('SPOTIFY_CLIENT_SECRET')
-    
-    reddit_client_id = reddit_client_id or os.getenv('REDDIT_CLIENT_ID')
-    reddit_client_secret = reddit_client_secret or os.getenv('REDDIT_CLIENT_SECRET')
-    reddit_username = reddit_username or os.getenv('REDDIT_USERNAME')
-    reddit_password = reddit_password or os.getenv('REDDIT_PASSWORD')
-    reddit_user_agent = reddit_user_agent or os.getenv('REDDIT_USER_AGENT')
-    
-    openai_api_key = openai_api_key or os.getenv('OPENAI_API_KEY')
     
     print("=" * 80)
     print("SONG RECOMMENDATION SYSTEM")
     print("=" * 80)
     print(f"\nConfiguration:")
     print(f"  Playlist URL: {playlist_url}")
-    print(f"  Subreddit: r/{subreddit_name}")
-    print(f"  Max Reddit posts per query: {max_reddit_posts_per_query}")
-    print(f"  Max comments per post: {max_comments_per_post}")
-    print(f"  Number of top tracks: {num_top_tracks}")
-    print(f"  Number of top artists: {num_top_artists}")
-    print(f"  GPT Model: {gpt_model}")
-    print(f"  GPT Temperature: {gpt_temperature}")
-    print(f"  GPT Max Tokens: {gpt_max_tokens}")
-    print(f"  Recommendations to generate: {num_recommendations}")
+    print(f"  Subreddit: r/{SUBREDDIT_NAME}")
+    print(f"  Max Reddit posts per query: {MAX_REDDIT_POSTS_PER_QUERY}")
+    print(f"  Max comments per post: {MAX_COMMENTS_PER_POST}")
+    print(f"  Number of top tracks: {NUM_TOP_TRACKS}")
+    print(f"  Number of top artists: {NUM_TOP_ARTISTS}")
+    print(f"  GPT Model: {GPT_MODEL}")
+    print(f"  GPT Temperature: {GPT_TEMPERATURE}")
+    print(f"  GPT Max Tokens: {GPT_MAX_TOKENS}")
+    print(f"  Recommendations to generate: {NUM_RECOMMENDATIONS}")
     print("=" * 80)
     
     # Initialize APIs
     print("\nInitializing APIs...")
-    sp = initialize_spotify(spotify_client_id, spotify_client_secret)
-    reddit = initialize_reddit(reddit_client_id, reddit_client_secret, reddit_username, reddit_password, reddit_user_agent)
-    openai_client = initialize_openai(openai_api_key)
+    sp = initialize_spotify(SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET)
+    openai_client = initialize_openai(OPENAI_API_KEY)
     print()
     
     # Step 2: Extract Playlist Data
@@ -114,15 +78,19 @@ def get_recommendations(
     tracks_data = playlist_result['tracks_data']
     print()
     
-    # Step 3: Search Reddit for Recommendations
-    reddit_result = get_reddit_recommendations(
-        reddit,
+    # Step 3: Search Reddit for Recommendations (Async)
+    reddit_result = await get_reddit_recommendations(
+        REDDIT_CLIENT_ID,
+        REDDIT_CLIENT_SECRET,
+        REDDIT_USERNAME,
+        REDDIT_PASSWORD,
+        REDDIT_USER_AGENT,
         tracks_data,
-        subreddit_name,
-        max_reddit_posts_per_query,
-        max_comments_per_post,
-        num_top_tracks,
-        num_top_artists
+        SUBREDDIT_NAME,
+        MAX_REDDIT_POSTS_PER_QUERY,
+        MAX_COMMENTS_PER_POST,
+        NUM_TOP_TRACKS,
+        NUM_TOP_ARTISTS
     )
     all_reddit_data = reddit_result['all_reddit_data']
     top_tracks = reddit_result['top_tracks']
@@ -135,11 +103,11 @@ def get_recommendations(
         playlist_data,
         all_reddit_data,
         top_tracks,
-        subreddit_name,
-        num_recommendations,
-        gpt_model,
-        gpt_temperature,
-        gpt_max_tokens
+        SUBREDDIT_NAME,
+        NUM_RECOMMENDATIONS,
+        GPT_MODEL,
+        GPT_TEMPERATURE,
+        GPT_MAX_TOKENS
     )
     print()
     
@@ -180,8 +148,8 @@ def get_recommendations(
         'gpt_recommendations': gpt_recommendations,
         'final_recommendations': final_recommendations,
         'metadata': {
-            'subreddit': subreddit_name,
-            'num_requested': num_recommendations,
+            'subreddit': SUBREDDIT_NAME,
+            'num_requested': NUM_RECOMMENDATIONS,
             'num_found': len(final_recommendations)
         }
     }
@@ -191,7 +159,7 @@ if __name__ == "__main__":
     # Example usage - can be run directly
     PLAYLIST_URL = "https://open.spotify.com/playlist/3XyDvjoxiae0oWpfJ4kga9?si=d2f57623799b4ebb"
     
-    result = get_recommendations(playlist_url=PLAYLIST_URL)
+    result = asyncio.run(get_recommendations(playlist_url=PLAYLIST_URL))
     
     print("\nRecommendation system completed!")
     print(f"   Found {len(result['final_recommendations'])}/{result['metadata']['num_requested']} recommendations")
