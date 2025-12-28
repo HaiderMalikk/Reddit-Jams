@@ -153,13 +153,3 @@ async def get_recommendations(playlist_url: str) -> dict:
             'num_found': len(final_recommendations)
         }
     }
-
-
-if __name__ == "__main__":
-    # Example usage - can be run directly
-    PLAYLIST_URL = "https://open.spotify.com/playlist/3XyDvjoxiae0oWpfJ4kga9?si=d2f57623799b4ebb"
-    
-    result = asyncio.run(get_recommendations(playlist_url=PLAYLIST_URL))
-    
-    print("\nRecommendation system completed!")
-    print(f"   Found {len(result['final_recommendations'])}/{result['metadata']['num_requested']} recommendations")
