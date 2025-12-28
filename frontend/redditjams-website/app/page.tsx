@@ -13,7 +13,7 @@ export default function Home() {
           <div className="mx-auto flex max-w-2xl gap-4">
             <input
               type="text"
-              placeholder="Paste your Spotify playlist link here..."
+              placeholder="Paste your public Spotify playlist link here..."
               className="flex-1 rounded-lg border-2 border-black px-6 py-4 text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary"
             />
             <button className="rounded-lg bg-primary px-8 py-4 font-semibold text-white transition-colors hover:bg-[#E63D00]">
@@ -140,6 +140,27 @@ export default function Home() {
               </div>
             </div>
 
+            {/* Step 3.5 - Optional */}
+            <div className="flex gap-6 rounded-lg border-2 border-primary bg-primary/5 p-6">
+              <div className="flex-shrink-0">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white border-2 border-primary text-xl font-bold text-primary">
+                  ⚠️
+                </div>
+              </div>
+              <div className="flex-1">
+                <h4 className="mb-2 text-xl font-semibold text-black">
+                  Make Sure Your Playlist is Public <span className="text-sm text-primary">(Important!)</span>
+                </h4>
+                <p className="mb-4 text-gray-700">
+                  In the same three dots menu, look for the option to make your playlist public if it isn't already. 
+                  <span className="font-semibold text-black"> We can only access public playlists.</span> Don't worry, you can make it private again after using RedditJams!
+                </p>
+                <div className="h-48 rounded-lg bg-gray-200 flex items-center justify-center text-gray-500">
+                  [Screenshot placeholder: Make playlist public option in menu]
+                </div>
+              </div>
+            </div>
+
             {/* Step 4 */}
             <div className="flex gap-6 rounded-lg border-2 border-black p-6">
               <div className="flex-shrink-0">
@@ -173,7 +194,7 @@ export default function Home() {
                   Paste the Link Above
                 </h4>
                 <p className="mb-4 text-gray-700">
-                  Paste the copied link into the input field at the top of this
+                  Paste the copied public playlist link into the input field at the top of this
                   page and click Start!
                 </p>
                 <div className="rounded-lg bg-primary/10 p-4">
