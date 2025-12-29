@@ -22,7 +22,7 @@ Simply provide a **Spotify playlist URL**, and RedditJams will:
 ### API Endpoint
 
 ```
-POST coming soon...
+POST https://reddit-jams-backend.vercel.app/api/recommendations
 ```
 
 ### Request Format
@@ -38,9 +38,9 @@ Send a POST request with JSON body containing your Spotify playlist URL (for how
 ### Example cURL Request
 
 ```bash
-curl -X POST http://your-domain.com:8000/api/recommendations \
+curl -X POST https://reddit-jams-backend.vercel.app/api/recommendations \
   -H "Content-Type: application/json" \
-  -d '{"playlist_url": "https://open.spotify.com/playlist/YOUR_PLAYLIST_ID"}'
+  -d '{"playlist_url": "https://open.spotify.com/playlist/3XyDvjoxiae0oWpfJ4kga9"}'
 ```
 
 ---
@@ -207,7 +207,7 @@ The API uses the following default configuration:
 
 ### Health Check
 ```bash
-GET http://your-domain.com:8000/api/health
+GET https://reddit-jams-backend.vercel.app/api/health
 ```
 
 Returns:
@@ -220,7 +220,7 @@ Returns:
 
 ### API Documentation
 ```bash
-GET http://your-domain.com:8000/docs
+GET https://reddit-jams-backend.vercel.app/docs
 ```
 
 Opens interactive Swagger UI documentation where you can test the API directly in your browser.
