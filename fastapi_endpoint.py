@@ -10,6 +10,7 @@ from typing import Optional
 from main import get_recommendations
 import sys
 import io
+from spotipy.exceptions import SpotifyException
 
 app = FastAPI(
     title="RedditJams API",
@@ -72,9 +73,44 @@ async def get_song_recommendations(request: RecommendationRequest):
                 'recommendations_found': result['metadata']['num_found']
             }
         )
+    
+    except SpotifyException as e:
+        # Restore stdout if it was redirected
+        if 'old_stdout' in locals():
+            sys.stdout = old_stdout
+        
+        # Handle Spotify API errors consistently
+        error_message = str(e)
+        
+        # Check for invalid playlist ID (400) - malformed URL
+        if "http status: 400" in error_message or "Invalid base62 id" in error_message:
+            return RecommendationResponse(
+                success=False,
+                error="Invalid playlist URL. Please check the link and try again."
+            )
+        # Check for private/not found playlist (404)
+        elif "http status: 404" in error_message or "Resource not found" in error_message:
+            return RecommendationResponse(
+                success=False,
+                error="Playlist not found. It may be private or deleted. Please make sure the playlist exists and is public."
+            )
+        else:
+            # Any other Spotify error - internal error
+            return RecommendationResponse(
+                success=False,
+                error="Internal error. Please try again later."
+            )
         
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        # Restore stdout if it was redirected
+        if 'old_stdout' in locals():
+            sys.stdout = old_stdout
+        
+        # Generic error handler - internal error
+        return RecommendationResponse(
+            success=False,
+            error="Internal error. Please try again later."
+        )
 
 
 @app.get("/api/health")

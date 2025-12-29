@@ -2,21 +2,21 @@ import Image from "next/image";
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-white font-sans">
+    <div className="min-h-screen bg-white font-sans overflow-x-hidden">
       {/* Main Content */}
-      <main className="mx-auto max-w-7xl px-8 py-12">
+      <main className="mx-auto max-w-7xl px-4 md:px-8 py-12">
         {/* Welcome Section with Input */}
         <section className="mb-20 text-center">
           <h2 className="mb-8 text-4xl font-bold text-black">
             Welcome to Reddit<span className="text-primary">Jams</span>
           </h2>
-          <div className="mx-auto flex max-w-2xl gap-4">
+          <div className="mx-auto flex flex-col md:flex-row max-w-2xl gap-4">
             <input
               type="text"
-              placeholder="Paste your public Spotify playlist link here..."
+              placeholder="Paste Spotify playlist link..."
               className="flex-1 rounded-lg border-2 border-black px-6 py-4 text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary"
             />
-            <button className="rounded-lg bg-primary px-8 py-4 font-semibold text-white transition-colors hover:bg-[#E63D00]">
+            <button className="rounded-lg bg-primary px-8 py-4 font-semibold text-white transition-colors hover:bg-[#E63D00] md:whitespace-nowrap">
               Start
             </button>
           </div>
@@ -209,7 +209,7 @@ export default function Home() {
                   5
                 </div>
               </div>
-              <div className="flex-1">
+              <div className="flex-1 min-w-0">
                 <h4 className="mb-2 text-xl font-semibold text-black">
                   Paste the Link Above
                 </h4>
@@ -217,8 +217,8 @@ export default function Home() {
                   Paste the copied public playlist link into the input field at the top of this
                   page and click Start!
                 </p>
-                <div className="rounded-lg bg-primary/10 p-4">
-                  <p className="font-mono text-sm text-black">
+                <div className="rounded-lg bg-primary/10 p-4 overflow-x-auto">
+                  <p className="font-mono text-sm text-black break-all">
                     Example: https://open.spotify.com/playlist/3XyDvjoxiae0oWpfJ4kga9
                   </p>
                 </div>
@@ -229,11 +229,11 @@ export default function Home() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t-2 border-black bg-black px-8 py-12 text-white">
+      <footer className="border-t-2 border-black bg-black px-4 md:px-8 py-12 text-white">
         <div className="mx-auto max-w-7xl">
-          <div className="flex items-start justify-between gap-24">
-            {/* Logo */}
-            <div className="flex-shrink-0">
+          <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-8 md:gap-24">
+            {/* Logo - top on mobile, left on desktop */}
+            <div className="flex-shrink-0 hidden md:block">
               <Image
                 src="/logo.svg"
                 alt="RedditJams Logo"
@@ -243,11 +243,11 @@ export default function Home() {
             </div>
 
             {/* About, Links, and Creator - equally spaced */}
-            <div className="flex flex-1 justify-between gap-16">
+            <div className="flex flex-col md:flex-row flex-1 md:justify-between gap-8 md:gap-16">
               {/* About */}
               <div className="flex-1">
                 <h4 className="mb-4 text-lg font-bold text-primary">About</h4>
-                <p className="text-sm text-gray-300 max-w-xs">
+                <p className="text-sm text-gray-300 md:max-w-xs">
                   RedditJams is an intelligent music recommendation system that
                   combines Spotify data, Reddit community insights, and AI to help
                   you discover your next favorite songs.
@@ -299,6 +299,16 @@ export default function Home() {
                   © 2025 RedditJams. All rights reserved.
                 </p>
               </div>
+            </div>
+
+            {/* Logo - bottom center on mobile only */}
+            <div className="flex justify-center md:hidden mt-8">
+              <Image
+                src="/logo.svg"
+                alt="RedditJams Logo"
+                width={120}
+                height={120}
+              />
             </div>
           </div>
         </div>
