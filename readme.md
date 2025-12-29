@@ -22,12 +22,12 @@ Simply provide a **Spotify playlist URL**, and RedditJams will:
 ### API Endpoint
 
 ```
-POST http://your-domain.com:8000/api/recommendations
+POST coming soon...
 ```
 
 ### Request Format
 
-Send a POST request with JSON body containing your Spotify playlist URL:
+Send a POST request with JSON body containing your Spotify playlist URL (for how to get your spotify playlist url visit the website):
 
 ```json
 {
@@ -271,22 +271,68 @@ You get 5 personalized song recommendations you've never heard, based on your ta
 
 ## Technology Stack
 
+### Backend
 - **FastAPI** - High-performance async web framework
 - **AsyncPRAW** - Asynchronous Reddit API wrapper (parallel searches)
 - **Spotipy** - Spotify API integration
 - **OpenAI GPT-4** - AI-powered recommendation analysis
 - **Python asyncio** - Concurrent processing for speed
+- **Vercel** - Deployment
+
+### Frontend
+- **Next.js** - React framework for the web interface
+- **TypeScript** - Type-safe development
+- **Tailwind CSS** - Utility-first styling
+- **Vercel** - Deployment and analytics tracking
 
 ---
 
-## API Status Codes
+## API Error Handling
 
-- **200** - Success, recommendations returned
-- **500** - Server error (invalid playlist URL, API rate limits, etc.)
+The API returns consistent error responses in the `error` field:
+
+### Success Response
+```json
+{
+  "success": true,
+  "playlist_name": "My Playlist",
+  "recommendations": [...],
+  "metadata": {...},
+  "error": null
+}
+```
+
+### Error Responses
+
+**Invalid Playlist URL** (malformed link):
+```json
+{
+  "success": false,
+  "error": "Invalid playlist URL. Please check the link and try again."
+}
+```
+
+**Playlist Not Found** (private or deleted):
+```json
+{
+  "success": false,
+  "error": "Playlist not found. It may be private or deleted. Please make sure the playlist exists and is public."
+}
+```
+
+**Internal Error** (API failures, rate limits, etc.):
+```json
+{
+  "success": false,
+  "error": "Internal error. Please try again later."
+}
+```
 
 ---
 
 **Built for music lovers who want to discover their next favorite song.**
+
+[View Website](https://redditjams.com)
 
 [Licence](/licence)
 
