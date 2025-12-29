@@ -93,6 +93,7 @@ def get_playlist_data(sp: spotipy.Spotify, playlist_url: str) -> Dict[str, Any]:
         "name": playlist["name"],
         "owner": playlist["owner"]["display_name"],
         "total_tracks": len(tracks_data),
+        "album_art": playlist["images"][0]["url"] if playlist["images"] else None,
         "tracks": tracks_data,
     }
 

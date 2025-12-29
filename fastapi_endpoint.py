@@ -34,7 +34,7 @@ class RecommendationRequest(BaseModel):
 
 class RecommendationResponse(BaseModel):
     success: bool
-    playlist_name: Optional[str] = None
+    playlist_details: Optional[dict] = None
     recommendations: Optional[list] = None
     metadata: Optional[dict] = None
     error: Optional[str] = None
@@ -69,7 +69,12 @@ async def get_song_recommendations(request: RecommendationRequest):
         # Prepare response
         return RecommendationResponse(
             success=True,
-            playlist_name=result["playlist_data"]["name"],
+            playlist_details={
+                "name": result["playlist_data"]["name"],
+                "owner": result["playlist_data"]["owner"],
+                "total_tracks": result["playlist_data"]["total_tracks"],
+                "album_art": result["playlist_data"]["album_art"],
+            },
             recommendations=result["final_recommendations"],
             metadata={
                 "total_tracks_analyzed": len(result["tracks_data"]),
