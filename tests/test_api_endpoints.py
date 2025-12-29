@@ -6,7 +6,7 @@ Tests for FastAPI endpoints including success and error cases
 import pytest
 import requests
 
-BASE_URL = "https://reddit-jams-backend.vercel.app"
+BASE_URL = "https://reddit-jams-backend.vercel.app"  # vercel app
 
 
 def test_health_check():
@@ -81,6 +81,19 @@ def test_malformed_request():
         f"{BASE_URL}/api/recommendations", json=payload, timeout=30
     )
     assert response.status_code == 422  # Validation error
+
+
+def test_non_playlist_spotify_url():
+    """Test Spotify URL without valid playlist path returns invalid URL error"""
+    payload = {"playlist_url": "https://open.spotify.com/"}
+    response = requests.post(
+        f"{BASE_URL}/api/recommendations", json=payload, timeout=30
+    )
+    assert response.status_code == 200
+    data = response.json()
+    assert data["success"] is False
+    assert "invalid" in data["error"].lower()
+    assert data["recommendations"] is None
 
 
 if __name__ == "__main__":
