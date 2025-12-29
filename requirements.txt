@@ -1,7 +1,5 @@
 asyncpraw==7.8.1
 python-dotenv==1.0.0
-numpy>=1.21.0,<2.0
-pandas==2.0.3
 spotipy==2.22.1
 openai>=1.0.0
 fastapi>=0.104.0
