@@ -33,6 +33,14 @@ export const metadata: Metadata = {
     siteName: "RedditJams",
     type: "website",
     locale: "en_US",
+    images: [
+      {
+        url: "/previewcard.png",
+        width: 1200,
+        height: 630,
+        alt: "RedditJams Logo",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
@@ -40,6 +48,7 @@ export const metadata: Metadata = {
     description:
       "Discover trending music and create Spotify playlists from your favorite Reddit communities.",
     creator: "@redditjams",
+    images: ["/previewcard.png"],
   },
   robots: {
     index: true,
