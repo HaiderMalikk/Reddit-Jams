@@ -165,6 +165,27 @@ Only keeps posts/comments containing recommendation keywords:
 - "fans of"
 - "try"
 
+> [!NOTE]
+> **Why r/music?**
+
+r/music is the optimal subreddit for music recommendations for several key reasons:
+
+- **Unmatched Scale:** With over 32 million members, r/music is Reddit's largest music community by far. The next largest music subreddits (like r/listentothis at ~17M or r/hiphopheads at ~2.8M) are significantly smaller.
+
+- **Genre Diversity:** Unlike specialized subreddits (r/metal, r/indieheads, r/jazz, r/edm, etc.) that focus on specific genres, r/music covers all music types in one place. This means:
+  - A playlist mixing pop, rock, and electronic gets comprehensive recommendations
+  - No need to query 10+ genre-specific subreddits separately
+  - Avoids the complexity of analyzing user taste to determine which subreddits to search
+
+- **High Engagement:** r/music has thousands of active daily discussions with genuine music discovery conversations, ensuring fresh recommendations across all genres.
+
+- **Efficient Processing:** Searching one large, diverse subreddit is faster and simpler than:
+  - Analyzing playlist genres → mapping to multiple subreddits → parallel searches across 5-10 communities
+  - Managing different community rules, post formats, and recommendation patterns
+  - Aggregating and deduplicating results from fragmented sources
+
+By using r/music, we guarantee broad coverage of all music tastes while maintaining fast, reliable API performance.
+
 #### **Step 3: AI-Powered Analysis**
 - Sends your playlist data + Reddit recommendations to **GPT-4**
 - GPT-4 analyzes patterns in your music taste
